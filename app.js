@@ -1,146 +1,72 @@
+<script>
 const btn = document.getElementById("btnSearch");
-const input = document.getElementById("cityInput");
 const statusBox = document.getElementById("status");
 const chartBox = document.getElementById("chartBox");
+const daysSelect = document.getElementById("daysSelect");
 
 let chart = null;
 
-btn.addEventListener("click", () => {
-  if (!input.value) return alert("Ingresa ciudad o coordenadas");
-  loadWeather(input.value);
-});
+btn.addEventListener("click", obtenerClima);
 
-async function loadWeather(query) {
+async function obtenerClima() {
+  statusBox.classList.remove("hidden");
+  chartBox.classList.add("hidden");
+
   try {
-    showLoading();
+    const days = daysSelect.value;
 
-    const startDate = document.getElementById("dateInput").value;
-    const days = document.getElementById("daysSelect").value;
+    // Coordenadas por defecto (CDMX)
+    const lat = 19.43;
+    const lon = -99.13;
 
-    if (!startDate) {
-      showError("Selecciona una fecha");
-      return;
-    }
-
-    const today = new Date();
-    const maxDate = new Date();
-    maxDate.setDate(today.getDate() + 16);
-
-    const selected = new Date(startDate);
-    if (selected > maxDate) {
-      showError("La API solo permite hasta 16 días desde hoy");
-      return;
-    }
-
-    let lat, lon;
-
-    if (query.includes(",")) {
-      [lat, lon] = query.split(",");
-    } else {
-      const geo = await fetch(
-        `https://geocoding-api.open-meteo.com/v1/search?name=${query}`
-      );
-      const geoData = await geo.json();
-
-      if (!geoData.results || geoData.results.length === 0) {
-        showError("Ciudad no encontrada");
-        return;
-      }
-
-      lat = geoData.results[0].latitude;
-      lon = geoData.results[0].longitude;
-    }
-
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + parseInt(days));
-    const endStr = endDate.toISOString().split("T")[0];
-
-    const url = `
-      https://api.open-meteo.com/v1/forecast
-      ?latitude=${lat}
-      &longitude=${lon}
-      &daily=temperature_2m_max
-      &start_date=${startDate}
-      &end_date=${endStr}
-      &timezone=auto
-    `;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max&forecast_days=${days}&timezone=auto`;
 
     const res = await fetch(url);
+    if (!res.ok) throw new Error("Error en la API");
+
     const data = await res.json();
 
-    if (!data.daily) {
-      showError("La API no devolvió datos");
-      return;
-    }
+    const labels = data.daily.time;
+    const temps = data.daily.temperature_2m_max;
 
-    renderChart(data.daily.time, data.daily.temperature_2m_max);
-    updateLegend(data.daily.temperature_2m_max);
-    showChart();
+    mostrarGrafica(labels, temps);
 
-  } catch (e) {
-    console.error(e);
-    showError("Error en la petición");
+  } catch (error) {
+    statusBox.innerHTML = "<p>Error al obtener datos 😕</p>";
   }
 }
 
-function renderChart(labels, temps) {
-  if (chart) chart.destroy();
+function mostrarGrafica(labels, temps) {
+  statusBox.classList.add("hidden");
+  chartBox.classList.remove("hidden");
 
-  const ctx = document.getElementById("weatherChart");
+  if (chart) chart.destroy(); // ✅ control de memoria
 
-  chart = new Chart(ctx, {
+  const maxTemp = Math.max(...temps);
+  let color = "green";
+
+  if (maxTemp > 30) color = "red";
+  if (maxTemp < 10) color = "blue";
+
+  chart = new Chart(weatherChart, {
     type: "line",
     data: {
       labels,
       datasets: [{
-        label: "Temperatura °C",
+        label: "Temperatura Máxima (°C)",
         data: temps,
-        pointBackgroundColor: temps.map(t =>
-          t > 30 ? "red" : t < 10 ? "blue" : "green"
-        ),
-        borderColor: "green",
-        segment: {
-          borderColor: ctx => {
-            const t = ctx.p1.parsed.y;
-            return t > 30 ? "red" : t < 10 ? "blue" : "green";
-          }
-        },
-        tension: 0.3
+        borderColor: color,
+        backgroundColor: color,
+        tension: 0.3,
+        pointRadius: 5
       }]
     },
     options: {
-      responsive: true
+      responsive: true,
+      plugins: {
+        tooltip: { enabled: true }
+      }
     }
   });
 }
-
-function updateLegend(temps) {
-  const hot = temps.filter(t => t > 30).length;
-  const cold = temps.filter(t => t < 10).length;
-  const normal = temps.length - hot - cold;
-
-  document.getElementById("legend").innerHTML = `
-    🔴 ${hot} días > 30°C<br>
-    🔵 ${cold} días < 10°C<br>
-    🟢 ${normal} días normales
-  `;
-}
-
-function showLoading() {
-  statusBox.classList.remove("hidden");
-  chartBox.classList.add("hidden");
-}
-
-function showChart() {
-  statusBox.classList.add("hidden");
-  chartBox.classList.remove("hidden");
-}
-
-function showError(msg) {
-  statusBox.classList.remove("hidden");
-  chartBox.classList.add("hidden");
-  statusBox.innerHTML = `
-    <div class="spinner"></div>
-    <p>${msg}</p>
-  `;
-}
+</script>

@@ -1,10 +1,8 @@
 :root {
-  --bg: #e9eef3;
-  --card: #dde5ee;
+  --bg: #e6ebf5;
+  --card: #f4f6ff;
+  --shadow-dark: #c2c7d6;
   --shadow-light: #ffffff;
-  --shadow-dark: #b5c0cc;
-  --text: #2b2b2b;
-  --accent: #4a90e2;
 }
 
 * {
@@ -15,116 +13,111 @@ body {
   margin: 0;
   font-family: "Segoe UI", sans-serif;
   background: var(--bg);
-  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+/* 🔹 Tarjetas clay */
+.card {
+  background: var(--card);
+  border-radius: 25px;
+  padding: 20px;
+  margin: 15px 0;
+  width: 100%;
+  max-width: 850px;
+  box-shadow:
+    12px 12px 24px var(--shadow-dark),
+    -12px -12px 24px var(--shadow-light);
+}
+
+/* Header */
+.header {
   text-align: center;
 }
 
-/* ===== CLAY CARD ===== */
-.card {
-  background: var(--card);
-  border-radius: 26px;
-  padding: 22px;
-  margin: 25px auto;
-  width: 80%;
-  box-shadow:
-    14px 14px 28px var(--shadow-dark),
-    -14px -14px 28px var(--shadow-light);
+/* Buscador */
+.search-box {
+  display: flex;
+  gap: 10px;
 }
 
-/* ===== HEADER ===== */
-.header h1 {
-  margin: 0;
+.search-box input {
+  flex: 1;
 }
 
-.header p {
-  margin-top: 8px;
-  opacity: 0.8;
-}
-
-/* ===== SEARCH & CONTROLS ===== */
-.search-box,
+/* Controles */
 .controls {
   display: flex;
+  gap: 20px;
   justify-content: center;
-  gap: 15px;
-  flex-wrap: wrap;
 }
 
-.controls div {
-  display: flex;
-  flex-direction: column;
+label {
+  font-size: 0.85rem;
 }
 
-/* ===== INPUTS ===== */
-input, select, button {
-  padding: 12px 16px;
-  border-radius: 18px;
+/* Inputs */
+input, select {
+  padding: 8px 12px;
+  border-radius: 12px;
   border: none;
   outline: none;
-  background: var(--card);
-  font-size: 15px;
-
+  background: var(--bg);
   box-shadow:
-    inset 6px 6px 10px var(--shadow-dark),
-    inset -6px -6px 10px var(--shadow-light);
+    inset 4px 4px 8px var(--shadow-dark),
+    inset -4px -4px 8px var(--shadow-light);
 }
 
+/* Botón */
 button {
+  padding: 10px 20px;
+  border-radius: 18px;
+  border: none;
   cursor: pointer;
   font-weight: bold;
-  color: var(--accent);
+  background: var(--card);
+  box-shadow:
+    8px 8px 16px var(--shadow-dark),
+    -8px -8px 16px var(--shadow-light);
 }
 
 button:active {
   box-shadow:
-    inset 2px 2px 4px var(--shadow-dark),
-    inset -2px -2px 4px var(--shadow-light);
+    inset 6px 6px 12px var(--shadow-dark),
+    inset -6px -6px 12px var(--shadow-light);
 }
 
-/* ===== STATUS ===== */
-.status {
-  font-weight: bold;
-}
-
-/* ===== CHART ===== */
-.chart-container canvas {
-  background: #f1f5f9;
-  border-radius: 18px;
-  padding: 16px;
-}
-
-/* ===== LEGEND ===== */
-.dynamic-legend {
-  margin-top: 15px;
-  font-size: 14px;
-}
-
-/* ===== SPINNER ===== */
+/* Spinner */
 .spinner {
-  width: 46px;
-  height: 46px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
+  border: 5px solid var(--card);
+  border-top: 5px solid #5a7cff;
+  animation: spin 1s linear infinite;
   margin: auto;
-  background: var(--card);
-  box-shadow:
-    inset 4px 4px 8px var(--shadow-dark),
-    inset -4px -4px 8px var(--shadow-light);
-  animation: pulse 1s infinite alternate;
 }
 
-@keyframes pulse {
-  from { transform: scale(1); }
-  to { transform: scale(1.15); }
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-/* ===== FOOTER ===== */
-.footer {
-  margin: 20px;
-  font-size: 13px;
-  opacity: 0.7;
-}
-
-/* ===== UTILS ===== */
+/* Estados */
 .hidden {
   display: none;
+}
+
+.status {
+  text-align: center;
+}
+
+.chart-container {
+  text-align: center;
+}
+
+.footer {
+  margin-top: 20px;
+  color: #555;
 }

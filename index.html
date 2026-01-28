@@ -2,30 +2,42 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Clima Claymorphism</title>
-  <link rel="stylesheet" href="style.css">
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
+  <!-- 🔹 Encabezado -->
   <header class="card header">
     <h1>🌤 El Clima a tu Alcance</h1>
-    <p>Consulta temperaturas con estilo clay</p>
+    <p>Consulta temperaturas con estilo Claymorphism</p>
   </header>
 
+  <!-- 🔹 Buscador -->
   <section class="card search-box">
-    <input type="text" id="cityInput" placeholder="Ciudad o lat,lon (19.43,-99.13)">
+    <input
+      type="text"
+      id="cityInput"
+      placeholder="Ciudad o lat,lon (ej. 19.43,-99.13)"
+    >
     <button id="btnSearch">Buscar</button>
   </section>
 
+  <!-- 🔹 Controles -->
   <section class="card controls">
     <div>
-      <label>Fecha inicio</label>
+      <label for="dateInput">Fecha inicio</label>
       <input type="date" id="dateInput">
     </div>
 
     <div>
-      <label>Días</label>
+      <label for="daysSelect">Días</label>
       <select id="daysSelect">
         <option value="5">5 días</option>
         <option value="10">10 días</option>
@@ -33,26 +45,30 @@
     </div>
   </section>
 
+  <!-- 🔹 Estado: Cargando / Error -->
   <section id="status" class="card status hidden">
     <div class="spinner"></div>
     <p>Cargando datos...</p>
   </section>
 
+  <!-- 🔹 Gráfica -->
   <section id="chartBox" class="card chart-container hidden">
     <canvas id="weatherChart"></canvas>
-    <div id="legend" class="dynamic-legend"></div>
   </section>
 
+  <!-- 🔹 Pie de página -->
   <footer class="footer">
     <p>API: Open-Meteo · Chart.js</p>
   </footer>
 
+  <!-- 🔹 Script principal -->
+  <script src="js/app.js"></script>
+
+  <!-- 🔹 Fecha por defecto (hoy) -->
   <script>
     document.getElementById("dateInput").value =
       new Date().toISOString().split("T")[0];
   </script>
 
-  <script src="app.js"></script>
 </body>
 </html>
-
