@@ -1,62 +1,62 @@
+:root {
+    --bg-color: #e0e7ff;
+    --clay-bg: #f0f4ff;
+    --accent: #6366f1;
+}
+
 body {
-  background: #e0e5ec;
-  font-family: Arial, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+    background-color: var(--bg-color);
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
 }
 
-.card {
-  background: #e0e5ec;
-  padding: 30px;
-  border-radius: 25px;
-  box-shadow:
-    9px 9px 16px #a3b1c6,
-   -9px -9px 16px #ffffff;
-  width: 420px;
-  text-align: center;
+.container {
+    background: var(--clay-bg);
+    padding: 2rem;
+    border-radius: 35px;
+    box-shadow: 20px 20px 60px #be32c7, -20px -20px 60px #ffffff,
+                inset 10px 10px 20px rgba(0,0,0,0.05);
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
 }
 
-h2 {
-  margin-bottom: 15px;
-}
-
-.input {
-  width: 90%;
-  padding: 10px;
-  border-radius: 15px;
-  border: none;
-  margin-bottom: 12px;
-  background: #e0e5ec;
-  box-shadow:
-    inset 4px 4px 8px #a3b1c6,
-    inset -4px -4px 8px #ffffff;
+input {
+    border: none;
+    padding: 12px 20px;
+    border-radius: 20px;
+    background: var(--clay-bg);
+    box-shadow: inset 6px 6px 12px #d1d9e6, inset -6px -6px 12px #ffffff;
+    outline: none;
+    margin-right: 10px;
 }
 
 button {
-  background: #e0e5ec;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 15px;
-  box-shadow:
-    inset 4px 4px 8px #a3b1c6,
-    inset -4px -4px 8px #ffffff;
-  cursor: pointer;
-  margin-bottom: 15px;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 20px;
+    background: var(--accent);
+    color: white;
+    font-weight: bold;
+    box-shadow: 4px 4px 10px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: transform 0.2s;
 }
 
-button:hover {
-  box-shadow:
-    inset 2px 2px 4px #a3b1c6,
-    inset -2px -2px 4px #ffffff;
+button:active { transform: scale(0.95); }
+
+.loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--accent);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
 }
 
-.estado {
-  margin: 10px 0;
-  font-weight: bold;
-}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-canvas {
-  margin-top: 15px;
-}
+.error { color: #ff4d4d; margin-top: 10px; }
