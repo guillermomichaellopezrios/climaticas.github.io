@@ -2,74 +2,59 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>ClimaWeb</title>
+  <title>Clima Web · Clay UI</title>
 
-  <!-- CSS -->
   <link rel="stylesheet" href="style.css">
-
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
 
-  <!-- HEADER -->
-  <header class="header">
-    <h1>🌤 ClimaWeb</h1>
-    <p>Consulta el clima de los próximos días</p>
-  </header>
+<header class="header">
+  <h1>☁️ El Clima a tu Alcance</h1>
+</header>
 
-  <!-- BUSCADOR -->
-  <section class="search-box">
-    <input 
-      type="text" 
-      id="cityInput" 
-      placeholder="Escribe una ciudad..."
-    >
-    <button id="searchBtn">Buscar</button>
-  </section>
+<section class="search-box">
+  <input
+    type="text"
+    id="cityInput"
+    placeholder="Ciudad o lat,lon (ej: 19.43,-99.13)"
+    aria-label="Ciudad o coordenadas">
+  <button id="btnSearch">Consultar</button>
+</section>
 
-  <!-- CONTROLES -->
-  <section class="controls">
-    <label for="days">Días:</label>
-    <input 
-      type="number" 
-      id="days" 
-      min="1" 
-      max="10" 
-      value="5"
-    >
+<section class="controls">
+  <label for="dateInput">Fecha inicio</label>
+  <input type="date" id="dateInput">
 
-    <label for="unit">Unidad:</label>
-    <select id="unit">
-      <option value="celsius">°C</option>
-      <option value="fahrenheit">°F</option>
-    </select>
-  </section>
+  <label for="daysSelect">Días</label>
+  <select id="daysSelect">
+    <option value="5">5 días</option>
+    <option value="10">10 días</option>
+  </select>
+</section>
 
-  <!-- ESTADO -->
-  <section id="status" class="status hidden">
-    <div class="spinner"></div>
-    <p id="statusText">Cargando datos del clima...</p>
-  </section>
+<section id="status" class="status hidden">
+  <div class="spinner"></div>
+  <p>Cargando pronóstico…</p>
+</section>
 
-  <!-- GRÁFICA -->
-  <section class="chart-container hidden">
-    <canvas id="weatherChart"></canvas>
-    <p class="dynamic-legend" id="legendText"></p>
-  </section>
+<section id="chartBox" class="chart-container hidden">
+  <canvas id="weatherChart"></canvas>
+  <div id="legend" class="dynamic-legend"></div>
+</section>
 
-  <!-- LEYENDA DE COLORES -->
-  <section class="color-key">
-    <p>
-      <span class="red"></span> Temperatura Máxima
-      &nbsp;&nbsp;
-      <span class="blue"></span> Temperatura Mínima
-    </p>
-  </section>
+<div class="color-key">
+  <span class="red"></span> &gt; 30°C
+  <span class="blue"></span> &lt; 10°C
+</div>
 
-  <!-- JS -->
-  <script src="app.js"></script>
+<script>
+  // Fecha por defecto = hoy
+  document.getElementById("dateInput").value =
+    new Date().toISOString().split("T")[0];
+</script>
+
+<script src="app.js"></script>
 
 </body>
 </html>
