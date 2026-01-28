@@ -1,160 +1,171 @@
-const searchBtn = document.getElementById("searchBtn");
-const cityInput = document.getElementById("cityInput");
-const daysInput = document.getElementById("days");
-const unitSelect = document.getElementById("unit");
-
+const btn = document.getElementById("btnSearch");
+const input = document.getElementById("cityInput");
 const statusBox = document.getElementById("status");
-const statusText = document.getElementById("statusText");
-const chartContainer = document.querySelector(".chart-container");
-const legendText = document.getElementById("legendText");
+const chartBox = document.getElementById("chartBox");
+const legendBox = document.getElementById("legend");
 
-let weatherChart = null;
+let chart = null;
 
-// EVENTO BOTÓN
-searchBtn.addEventListener("click", () => {
-  const city = cityInput.value.trim();
-  if (!city) {
-    showError("Escribe el nombre de una ciudad");
+btn.addEventListener("click", () => {
+  if (!input.value.trim()) {
+    showError("Escribe una ciudad o coordenadas 🙂");
     return;
   }
-  loadWeather(city);
+  loadWeather(input.value.trim());
 });
 
-// FUNCIÓN PRINCIPAL
-async function loadWeather(city) {
+async function loadWeather(query) {
   try {
-    showLoading("Buscando ubicación...");
+    showLoading();
 
-    // GEOLOCALIZACIÓN
-    const geoRes = await fetch(
-      `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=es`
-    );
-    const geoData = await geoRes.json();
+    const startDate = document.getElementById("dateInput").value;
+    const days = document.getElementById("daysSelect").value;
 
-    if (!geoData.results || geoData.results.length === 0) {
-      showError("Ciudad no encontrada");
+    if (!startDate) {
+      showError("Selecciona una fecha");
       return;
     }
 
-    const { latitude, longitude, name, country } = geoData.results[0];
+    // Límite API (16 días)
+    const today = new Date();
+    const maxDate = new Date();
+    maxDate.setDate(today.getDate() + 16);
 
-    showLoading("Obteniendo clima...");
+    if (new Date(startDate) > maxDate) {
+      showError("El pronóstico solo permite hasta 16 días");
+      return;
+    }
 
-    const days = daysInput.value;
-    const unit = unitSelect.value;
+    let lat, lon;
 
-    const tempUnit =
-      unit === "fahrenheit" ? "&temperature_unit=fahrenheit" : "";
+    // Coordenadas directas
+    if (query.includes(",")) {
+      [lat, lon] = query.split(",").map(v => v.trim());
+    } 
+    // Ciudad → Geocoding
+    else {
+      const geoRes = await fetch(
+        `https://geocoding-api.open-meteo.com/v1/search?name=${query}`
+      );
+      const geoData = await geoRes.json();
+
+      if (!geoData.results || geoData.results.length === 0) {
+        showError("No se encontró la ciudad");
+        return;
+      }
+
+      lat = geoData.results[0].latitude;
+      lon = geoData.results[0].longitude;
+    }
+
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + parseInt(days));
+    const endStr = endDate.toISOString().split("T")[0];
 
     const url = `
       https://api.open-meteo.com/v1/forecast
-      ?latitude=${latitude}
-      &longitude=${longitude}
-      &daily=temperature_2m_max,temperature_2m_min
-      &forecast_days=${days}
+      ?latitude=${lat}
+      &longitude=${lon}
+      &daily=temperature_2m_max
+      &start_date=${startDate}
+      &end_date=${endStr}
       &timezone=auto
-      ${tempUnit}
     `;
 
-    const weatherRes = await fetch(url);
-    const weatherData = await weatherRes.json();
+    const res = await fetch(url);
+    const data = await res.json();
 
-    if (!weatherData.daily) {
-      showError("No se pudieron obtener los datos");
+    if (!data.daily) {
+      showError("No se pudieron cargar los datos");
       return;
     }
 
-    renderChart(
-      weatherData.daily.time,
-      weatherData.daily.temperature_2m_max,
-      weatherData.daily.temperature_2m_min,
-      unit,
-      name,
-      country
-    );
-
+    renderChart(data.daily.time, data.daily.temperature_2m_max);
+    updateLegend(data.daily.temperature_2m_max);
     showChart();
 
-  } catch (error) {
-    console.error(error);
-    showError("Error al conectar con la API");
+  } catch (err) {
+    console.error(err);
+    showError("Ocurrió un error al consultar el clima");
   }
 }
 
-// GRÁFICA
-function renderChart(labels, maxTemps, minTemps, unit, city, country) {
+/* =====================
+   CHART
+===================== */
+
+function renderChart(labels, temps) {
+  if (chart) chart.destroy();
+
   const ctx = document.getElementById("weatherChart");
 
-  if (weatherChart) weatherChart.destroy();
-
-  weatherChart = new Chart(ctx, {
+  chart = new Chart(ctx, {
     type: "line",
     data: {
       labels,
-      datasets: [
-        {
-          label: `Máx (${unit === "fahrenheit" ? "°F" : "°C"})`,
-          data: maxTemps,
-          borderWidth: 3,
-          tension: 0.4
+      datasets: [{
+        label: "Temperatura máxima (°C)",
+        data: temps,
+        pointRadius: 6,
+        pointBackgroundColor: temps.map(t =>
+          t > 30 ? "#ff6b6b" : t < 10 ? "#5fa8ff" : "#6bcf9b"
+        ),
+        borderColor: "#6bcf9b",
+        segment: {
+          borderColor: c => {
+            const t = c.p1.parsed.y;
+            return t > 30 ? "#ff6b6b" : t < 10 ? "#5fa8ff" : "#6bcf9b";
+          }
         },
-        {
-          label: `Mín (${unit === "fahrenheit" ? "°F" : "°C"})`,
-          data: minTemps,
-          borderWidth: 3,
-          tension: 0.4
-        }
-      ]
+        tension: 0.35
+      }]
     },
     options: {
       responsive: true,
-      plugins: {
-        title: {
-          display: true,
-          text: `Clima en ${city}, ${country}`
-        },
-        legend: {
-          labels: {
-            usePointStyle: true
-          }
-        }
-      },
       interaction: {
         mode: "index",
         intersect: false
-      },
-      scales: {
-        y: {
-          title: {
-            display: true,
-            text: unit === "fahrenheit" ? "°F" : "°C"
-          }
-        }
       }
     }
   });
+}
 
-  legendText.innerHTML = `
-    📍 <strong>${city}, ${country}</strong><br>
-    🔴 Temperatura máxima<br>
-    🔵 Temperatura mínima
+/* =====================
+   LEGEND
+===================== */
+
+function updateLegend(temps) {
+  const hot = temps.filter(t => t > 30).length;
+  const cold = temps.filter(t => t < 10).length;
+  const normal = temps.length - hot - cold;
+
+  legendBox.innerHTML = `
+    🔴 ${hot} días calurosos<br>
+    🔵 ${cold} días fríos<br>
+    🟢 ${normal} días templados
   `;
 }
 
-// ESTADOS VISUALES
-function showLoading(text) {
+/* =====================
+   STATES
+===================== */
+
+function showLoading() {
   statusBox.classList.remove("hidden");
-  chartContainer.classList.add("hidden");
-  statusText.textContent = text;
+  chartBox.classList.add("hidden");
+  statusBox.innerHTML = `
+    <div class="spinner"></div>
+    <p>Cargando pronóstico…</p>
+  `;
 }
 
 function showChart() {
   statusBox.classList.add("hidden");
-  chartContainer.classList.remove("hidden");
+  chartBox.classList.remove("hidden");
 }
 
 function showError(msg) {
   statusBox.classList.remove("hidden");
-  chartContainer.classList.add("hidden");
-  statusText.textContent = msg;
+  chartBox.classList.add("hidden");
+  statusBox.innerHTML = `<p>${msg}</p>`;
 }
