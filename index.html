@@ -2,73 +2,74 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clima Claymorphism</title>
+  <title>ClimaWeb</title>
 
-  <!-- Estilos -->
-  <link rel="stylesheet" href="css/style.css">
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
 
-  <!-- 🔹 Encabezado -->
-  <header class="card header">
-    <h1>🌤 El Clima a tu Alcance</h1>
-    <p>Consulta temperaturas con estilo Claymorphism</p>
+  <!-- HEADER -->
+  <header class="header">
+    <h1>🌤 ClimaWeb</h1>
+    <p>Consulta el clima de los próximos días</p>
   </header>
 
-  <!-- 🔹 Buscador -->
-  <section class="card search-box">
-    <input
-      type="text"
-      id="cityInput"
-      placeholder="Ciudad o lat,lon (ej. 19.43,-99.13)"
+  <!-- BUSCADOR -->
+  <section class="search-box">
+    <input 
+      type="text" 
+      id="cityInput" 
+      placeholder="Escribe una ciudad..."
     >
-    <button id="btnSearch">Buscar</button>
+    <button id="searchBtn">Buscar</button>
   </section>
 
-  <!-- 🔹 Controles -->
-  <section class="card controls">
-    <div>
-      <label for="dateInput">Fecha inicio</label>
-      <input type="date" id="dateInput">
-    </div>
+  <!-- CONTROLES -->
+  <section class="controls">
+    <label for="days">Días:</label>
+    <input 
+      type="number" 
+      id="days" 
+      min="1" 
+      max="10" 
+      value="5"
+    >
 
-    <div>
-      <label for="daysSelect">Días</label>
-      <select id="daysSelect">
-        <option value="5">5 días</option>
-        <option value="10">10 días</option>
-      </select>
-    </div>
+    <label for="unit">Unidad:</label>
+    <select id="unit">
+      <option value="celsius">°C</option>
+      <option value="fahrenheit">°F</option>
+    </select>
   </section>
 
-  <!-- 🔹 Estado: Cargando / Error -->
-  <section id="status" class="card status hidden">
+  <!-- ESTADO -->
+  <section id="status" class="status hidden">
     <div class="spinner"></div>
-    <p>Cargando datos...</p>
+    <p id="statusText">Cargando datos del clima...</p>
   </section>
 
-  <!-- 🔹 Gráfica -->
-  <section id="chartBox" class="card chart-container hidden">
+  <!-- GRÁFICA -->
+  <section class="chart-container hidden">
     <canvas id="weatherChart"></canvas>
+    <p class="dynamic-legend" id="legendText"></p>
   </section>
 
-  <!-- 🔹 Pie de página -->
-  <footer class="footer">
-    <p>API: Open-Meteo · Chart.js</p>
-  </footer>
+  <!-- LEYENDA DE COLORES -->
+  <section class="color-key">
+    <p>
+      <span class="red"></span> Temperatura Máxima
+      &nbsp;&nbsp;
+      <span class="blue"></span> Temperatura Mínima
+    </p>
+  </section>
 
-  <!-- 🔹 Script principal -->
-  <script src="js/app.js"></script>
-
-  <!-- 🔹 Fecha por defecto (hoy) -->
-  <script>
-    document.getElementById("dateInput").value =
-      new Date().toISOString().split("T")[0];
-  </script>
+  <!-- JS -->
+  <script src="app.js"></script>
 
 </body>
 </html>
