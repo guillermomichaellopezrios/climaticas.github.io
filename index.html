@@ -1,29 +1,58 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clima Claymorphism</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Clima Claymorphism</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Panel de Trends</h1>
-        <div class="search-box">
-            <input type="text" id="cityInput" placeholder="Escribe una ciudad...">
-            <button id="searchBtn">Buscar</button>
-        </div>
 
-        <div id="loader" class="loader" style="display: none;"></div>
-        
-        <div class="chart-container">
-            <canvas id="weatherChart"></canvas>
-        </div>
-        <div id="errorMessage" class="error"></div>
+  <header class="card header">
+    <h1>🌤 El Clima a tu Alcance</h1>
+    <p>Consulta temperaturas con estilo clay</p>
+  </header>
+
+  <section class="card search-box">
+    <input type="text" id="cityInput" placeholder="Ciudad o lat,lon (19.43,-99.13)">
+    <button id="btnSearch">Buscar</button>
+  </section>
+
+  <section class="card controls">
+    <div>
+      <label>Fecha inicio</label>
+      <input type="date" id="dateInput">
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="script.js"></script>
+    <div>
+      <label>Días</label>
+      <select id="daysSelect">
+        <option value="5">5 días</option>
+        <option value="10">10 días</option>
+      </select>
+    </div>
+  </section>
+
+  <section id="status" class="card status hidden">
+    <div class="spinner"></div>
+    <p>Cargando datos...</p>
+  </section>
+
+  <section id="chartBox" class="card chart-container hidden">
+    <canvas id="weatherChart"></canvas>
+    <div id="legend" class="dynamic-legend"></div>
+  </section>
+
+  <footer class="footer">
+    <p>API: Open-Meteo · Chart.js</p>
+  </footer>
+
+  <script>
+    document.getElementById("dateInput").value =
+      new Date().toISOString().split("T")[0];
+  </script>
+
+  <script src="app.js"></script>
 </body>
 </html>
 
